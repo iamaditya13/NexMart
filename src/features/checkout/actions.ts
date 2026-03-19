@@ -1,0 +1,65 @@
+'use server';
+
+import type { ServerActionState } from '@/core/actions/types';
+import { prisma } from '@/core/db/db';
+import { routes } from '@/core/routing/utils';
+import { redirectToSignIn } from '@/features/auth/actions';
+import { getUser } from '@/features/auth/data';
+import { getUserCart } from '@/features/cart/data';
+import { refresh } from 'next/cache';
+import { redirect } from 'next/navigation';
+import {
+  completeCheckoutInputSchema,
+  type CompleteCheckoutInput,
+} from './schemas';
+
+type CompleteCheckoutState = ServerActionState;
+
+export async function completeCheckout(
+  input: CompleteCheckoutInput,
+): Promise<CompleteCheckoutState> {
+  const parsedInput = completeCheckoutInputSchema.safeParse(input);
+
+  if (!parsedInput.success) {
+    return {
+      status: 'error',
+      error: 'Invalid input',
+    };
+  }
+
+  const user = await getUser();
+  if (!user?.id) return await redirectToSignIn();
+
+  const userCart = await getUserCart();
+  if (!userCart) return await redirectToSignIn();
+
+  if (!userCart.productsOnCarts.length) {
+    return {
+      status: 'error',
+      error: 'Cart is empty',
+    };
+  }
+
+  const order = await prisma.order.create({
+    data: {
+      userId: user.id,
+      cityId: parsedInput.data.cityId,
+      productsOnOrders: {
+        create: userCart.productsOnCarts.map((productOnCarts) => ({
+          productId: productOnCarts.productId,
+          count: productOnCarts.count,
+        })),
+      },
+    },
+  });
+
+  await prisma.cart.delete({
+    where: {
+      id: userCart.id,
+    },
+  });
+
+  refresh();
+
+  redirect(routes.order({ orderId: order.id }));
+}

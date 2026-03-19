@@ -1,0 +1,97 @@
+import { signInPageSearchParamsSchema } from '@/core/routing/schemas';
+import { parseSearchParams, routes } from '@/core/routing/utils';
+import { getMetadata } from '@/core/seo/utils';
+import { APP_TITLE } from '@/core/shared/utils';
+import {
+  Alert,
+  AlertDescription,
+  AlertTitle,
+} from '@/core/ui/components/alert';
+import { Card, CardContent } from '@/core/ui/components/card';
+import { GithubIcon, WarningIcon } from '@/core/ui/components/icons';
+import { PageTitle } from '@/core/ui/components/page-title';
+import { SOCIAL_PROVIDERS } from '@/features/auth/auth';
+import { SignInWithProvider } from '@/features/auth/components/sign-in-with-provider';
+import { getUser } from '@/features/auth/data';
+import type { Metadata } from 'next';
+import { redirect } from 'next/navigation';
+import type { IconType } from 'react-icons/lib';
+
+// TODO: Error handling will be changes for better-auth. This was for next-auth.
+const signInErrors: Record<string, string> = {
+  default: 'Unable to sign in.',
+  Signin: 'Try signing in with a different account.',
+  OAuthSignin: 'Try signing in with a different account.',
+  OAuthCallbackError: 'Try signing in with a different account.',
+  OAuthCreateAccount: 'Try signing in with a different account.',
+  EmailCreateAccount: 'Try signing in with a different account.',
+  Callback: 'Try signing in with a different account.',
+  OAuthAccountNotLinked:
+    'To confirm your identity, sign in with the same account you used originally.',
+  EmailSignin: 'The e-mail could not be sent.',
+  CredentialsSignin:
+    'Sign in failed. Check the details you provided are correct.',
+  SessionRequired: 'Please sign in to access this page.',
+};
+
+const providerIconsByName: Record<string, IconType> = {
+  github: GithubIcon,
+  google: GithubIcon,
+};
+
+export const metadata: Metadata = getMetadata({
+  title: 'Sign In',
+  pathname: routes.signIn(),
+});
+
+export default async function SignInPage(props: PageProps<'/auth/sign-in'>) {
+  const user = await getUser();
+
+  if (user) redirect('/');
+
+  const searchParams = await props.searchParams;
+  const { callbackUrl, error } = parseSearchParams({
+    schema: signInPageSearchParamsSchema,
+    searchParams,
+  });
+
+  return (
+    <main>
+      <PageTitle srOnly title="Sign In" />
+      <Card className="mx-auto max-w-md py-8">
+        <CardContent className="flex flex-col items-center gap-12">
+          {error && (
+            <Alert icon={<WarningIcon />}>
+              <AlertTitle>Error</AlertTitle>
+              <AlertDescription>
+                {signInErrors[error] ?? signInErrors.default}
+              </AlertDescription>
+            </Alert>
+          )}
+          <div className="text-center">
+            <p className="text-primary mb-1 text-4xl font-black">{APP_TITLE}</p>
+            <p className="text-muted-foreground text-lg font-semibold">
+              Sign in to your {APP_TITLE} account
+            </p>
+          </div>
+          <div className="flex w-full max-w-sm flex-col gap-3">
+            {Object.values(SOCIAL_PROVIDERS).map((provider) => {
+              const Icon = providerIconsByName[provider.id];
+
+              return (
+                <SignInWithProvider
+                  key={provider.id}
+                  providerId={provider.id}
+                  callbackUrl={callbackUrl}
+                >
+                  <Icon />
+                  Sign in with {provider.name}
+                </SignInWithProvider>
+              );
+            })}
+          </div>
+        </CardContent>
+      </Card>
+    </main>
+  );
+}

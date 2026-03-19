@@ -1,0 +1,197 @@
+@import 'tailwindcss';
+
+/* To make Tailwind work with next-themes if used elsewhere. */
+@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
+
+/* https://tailwindcss.com/docs/hover-focus-and-other-states#aria-states */
+@custom-variant aria-invalid (&[aria-invalid='true']);
+
+@theme inline {
+  --font-sans: var(--font-jakarta);
+  --font-display: var(--font-display);
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-active: var(--primary-active);
+  --color-primary-foreground: var(--primary-foreground);
+
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-active: var(--accent-active);
+  --color-accent-foreground: var(--accent-foreground);
+
+  --color-danger: var(--danger);
+  --color-danger-hover: var(--danger-hover);
+  --color-danger-active: var(--danger-active);
+  --color-danger-foreground: var(--danger-foreground);
+
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+
+  --color-scrollbar-thumb: var(--scrollbar-thumb);
+  --color-scrollbar-thumb-hover: var(--scrollbar-thumb-hover);
+
+  --color-success: var(--success);
+  --color-error: var(--error);
+  --color-overlay: var(--overlay);
+  --color-border: var(--border);
+  --color-ring: var(--ring);
+  --color-favorite: var(--favorite);
+}
+
+@layer base {
+  :root {
+    --font-jakarta: 'Poppins', 'Avenir Next', 'Segoe UI', sans-serif;
+    --font-display: 'Poppins', 'Avenir Next', 'Segoe UI', sans-serif;
+
+    --primary: #ff4500;
+    --bg: #ffffff;
+    --text: #1a1a1a;
+    --secondary-bg: #f5f5f5;
+    --surface: #ffffff;
+    --surface-2: #f8f8f8;
+
+    --background: var(--bg);
+    --foreground: var(--text);
+
+    --primary-hover: #e13d00;
+    --primary-active: #ca3700;
+    --primary-foreground: #ffffff;
+
+    --accent: #f5f5f5;
+    --accent-hover: #ececec;
+    --accent-active: #dfdfdf;
+    --accent-foreground: #1a1a1a;
+
+    --danger: #e53935;
+    --danger-hover: #f04a46;
+    --danger-active: #f56a67;
+    --danger-foreground: #ffffff;
+
+    --muted: #f4f4f5;
+    --muted-foreground: #555555;
+
+    --scrollbar-thumb: #d4d4d8;
+    --scrollbar-thumb-hover: #b9b9bf;
+
+    --success: #159947;
+    --error: #b42318;
+    --overlay: rgba(0, 0, 0, 0.35);
+    --border: #e7e7ea;
+    --ring: #ff4500;
+    --favorite: #ff4500;
+  }
+
+  [data-theme='dark'] {
+    --primary: #ff4500;
+    --bg: #0f1115;
+    --text: #f6f7fb;
+    --secondary-bg: #191d24;
+    --surface: #141922;
+    --surface-2: #1b212b;
+
+    --background: var(--bg);
+    --foreground: var(--text);
+
+    --primary-hover: #e13d00;
+    --primary-active: #ca3700;
+    --primary-foreground: #ffffff;
+
+    --accent: #202733;
+    --accent-hover: #2a3340;
+    --accent-active: #344052;
+    --accent-foreground: #f6f7fb;
+
+    --danger: #e53935;
+    --danger-hover: #f04a46;
+    --danger-active: #f56a67;
+    --danger-foreground: #ffffff;
+
+    --muted: #1f2530;
+    --muted-foreground: #aeb7c7;
+
+    --scrollbar-thumb: #4c5563;
+    --scrollbar-thumb-hover: #6c7686;
+
+    --success: #159947;
+    --error: #b42318;
+    --overlay: rgba(0, 0, 0, 0.55);
+    --border: #2b3443;
+    --ring: #ff4500;
+    --favorite: #ff4500;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans;
+    text-rendering: optimizeLegibility;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-display), var(--font-jakarta), sans-serif;
+    letter-spacing: -0.02em;
+  }
+
+  a,
+  input,
+  button,
+  select,
+  textarea {
+    @apply focus-visible:outline-ring focus-visible:outline-2 focus-visible:outline-offset-2;
+  }
+
+  ::-webkit-scrollbar {
+    @apply size-3;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply rounded-lg border-2 border-solid border-transparent bg-scrollbar-thumb bg-clip-content hover:bg-scrollbar-thumb-hover;
+  }
+}
+
+@keyframes nexmart-marquee {
+  0% {
+    transform: translateX(0%);
+  }
+
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes float-up {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+
+  100% {
+    background-position: 200% 0;
+  }
+}
